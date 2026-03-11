@@ -6,7 +6,7 @@ description: |
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "master"]
   pull_request:
     branches: ["**"]
 
@@ -14,19 +14,24 @@ permissions: {}
 
 jobs:
   zizmor:
-    runs-on: ubuntu-latest
+    name: zizmor
+    runs-on: ubuntu-24.04
     permissions:
-      security-events: write
+      security-events: write # This permission is required to upload SARIF files.
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
 
-      - name: Run zizmor
-        uses: zizmorcore/zizmor-action@71321a20a9ded102f6e9ce5718a2fcec2c4f70d8 # v0.5.2
+      - uses: astral-sh/setup-uv@eac588ad8def6316056a12d4907a9d4d84ff7a3b # v7.3.0
         with:
-          advanced-security: true
-          min-severity: high
-          min-confidence: high
-          fail-on-no-inputs: false
+          enable-cache: false
+
+      - run: uvx zizmor --min-confidence=high --min-severity=high --format sarif . > results.sarif
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: github/codeql-action/upload-sarif@89a39a4e59826350b863aa6b6252a07ad50cf83e # v4.32.4
+        with:
+          sarif_file: results.sarif
+          category: zizmor
