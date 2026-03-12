@@ -12,11 +12,40 @@ on:
 permissions: {}
 
 jobs:
+  # reference: https://github.com/grafana/security-github-actions/blob/main/.github/workflows/self-zizmor.yaml
+  github-actions-check:
+    name: Check whether the repo uses Github actions
+    permissions:
+      contents: read
+    runs-on: ubuntu-arm64-small
+    outputs:
+      can-run-zizmor: ${{ steps.github-actions-check.outputs.can-run-zizmor }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          
+      - name: Check for github actions workflow files
+        id: github-actions-check
+        shell: bash
+        run: |
+          CAN_RUN_ZIZMOR=false
+          SEARCH=$(find . -path "**/.github/workflows/*.yml" -o -path "**/.github/workflows/*.yaml" -o -path "**/action.yml" -o -path "**/action.yaml")
+          if [ -n "$SEARCH" ]; then
+              CAN_RUN_ZIZMOR=true
+          fi
+          echo "can-run-zizmor=${CAN_RUN_ZIZMOR}" >> $GITHUB_OUTPUT
+
   zizmor:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-arm64-small
     permissions:
       contents: read
       actions: read
+    needs:
+      - github-actions-check
+    if: ${{ needs.github-actions-check.outputs.can-run-zizmor == 'true' }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
