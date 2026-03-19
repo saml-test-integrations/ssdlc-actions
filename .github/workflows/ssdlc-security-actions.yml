@@ -12,7 +12,9 @@ jobs:
   zizmor:
     runs-on: ubuntu-latest
     permissions:
-      security-events: write
+      security-events: write # require for public repos
+      contents: read # require for private repos
+      actions: read # require for private repos
       
     steps:
       - name: Checkout repository
@@ -35,7 +37,8 @@ jobs:
         if: ${{ steps.github-actions-check.outputs.can-run-zizmor == 'true' }}
         uses: zizmorcore/zizmor-action@71321a20a9ded102f6e9ce5718a2fcec2c4f70d8 # v0.5.2
         with:
-          advanced-security: true
+          advanced-security: ${{ github.event.repository.visibility == 'public' }} # only enable advanced-security for public repos
+          annotations: ${{ github.event.repository.visibility != 'public' }} # only enable annotations for private and internal repos
           min-severity: high
           min-confidence: high
           fail-on-no-inputs: false
