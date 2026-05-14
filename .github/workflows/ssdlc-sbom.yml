@@ -1,4 +1,4 @@
-name: syft-release-sbom
+name: ssdlc-sbom
 on:
   workflow_call:
     inputs:
