@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: write # required since we are updating workflow files
     steps:
       - run: gh repo sync "$GITHUB_REPOSITORY" -b main
         env:
