@@ -14,3 +14,6 @@ jobs:
       contents: write
     steps:
       - run: gh repo sync "$GITHUB_REPOSITORY" -b main
+        env:
+          GH_TOKEN: ${{ github.token }}
+
