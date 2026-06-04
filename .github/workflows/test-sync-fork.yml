@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      actions: write
     steps:
       - run: |
           # gh repo sync "$GITHUB_REPOSITORY" -b main
@@ -20,5 +19,5 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             "/repos/$GITHUB_REPOSITORY/merge-upstream" -f 'branch=main'
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
