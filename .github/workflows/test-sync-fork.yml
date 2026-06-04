@@ -13,11 +13,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - run: |
-          # gh repo sync "$GITHUB_REPOSITORY" -b main
-          gh api --method POST \
-            -H "Accept: application/vnd.github+json" \
-            "/repos/$GITHUB_REPOSITORY/merge-upstream" -f 'branch=main'
+      - run: gh repo sync "$GITHUB_REPOSITORY" -b main
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
